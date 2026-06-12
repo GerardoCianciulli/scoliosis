@@ -1,4 +1,4 @@
-# Momentum Health - Code challenge solution
+# Momentum Health - Scoliosis code challenge solution
 
 ![Design preview for the coding challenge](./src/assets/desktop-preview.jpg)
 
@@ -87,4 +87,3 @@ I improved my understanding of react hooks, specifically useRef and useEffect as
 - Portfolio - [Gerardo Cianciulli](https://www.behance.net/gerardo-cianciulli)
 - Frontend Mentor - [Gerardo Cianciulli](https://www.frontendmentor.io/profile/GerardoCianciulli)
 - Linkedin - [Gerardo Cianciulli](https://www.linkedin.com/in/gerardo-cianciulli/)
-# scoliosis
