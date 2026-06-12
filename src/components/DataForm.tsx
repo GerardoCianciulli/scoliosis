@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface Props {
   setVisibility?: (value: boolean) => void;
@@ -13,48 +13,73 @@ interface Props {
 }
 
 const DataForm = ({ setVisibility, existingPatient }: Props) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const [updatedName, setUpdatedName] = useState(
-    existingPatient && existingPatient.name
+    existingPatient && existingPatient.name,
   );
   const [updateAge, setUpdateAge] = useState(
-    existingPatient && existingPatient.age
+    existingPatient && existingPatient.age,
   );
   const [updateGender, setUpdateGender] = useState(
-    existingPatient && existingPatient.gender
+    existingPatient && existingPatient.gender,
   );
   const [videoUploaded, setVideoUploadStatus] = useState(
-    existingPatient && existingPatient.videoUploadStatus
+    existingPatient && existingPatient.videoUploadStatus,
   );
   const [updatePrediction, setUpdatePrediction] = useState(
-    existingPatient && existingPatient.scoliosisPredictionStatus
+    existingPatient && existingPatient.scoliosisPredictionStatus,
   );
   const [patient, setPatient] = useState(
-    existingPatient ? existingPatient : {}
+    existingPatient ? existingPatient : {},
   );
 
-  let createPatientProfile = async () => {
-    await fetch("http://localhost:3000/patients/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...patient, updated: new Date() }),
-    });
-    if (setVisibility) setVisibility(false);
+  const createPatientProfile = async () => {
+    try {
+      await fetch("http://localhost:3000/patients/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...patient, updated: new Date() }),
+      });
+      if (setVisibility) setVisibility(false);
+    } catch (error) {
+      console.error("Could not create patient profile:", error);
+    }
   };
 
   const updatePatientProfile = async () => {
-    await fetch(`http://localhost:3000/patients/${existingPatient.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...patient, updated: new Date() }),
-    });
+    try {
+      await fetch(`http://localhost:3000/patients/${existingPatient.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...patient, updated: new Date() }),
+      });
+      if (buttonRef.current) {
+        buttonRef.current.blur();
+      }
+      console.log(patient);
+      alert("Patient profile updated successfully");
+    } catch (error) {
+      console.error("Could not update patient profile:", error);
+    }
   };
 
   return (
     <div className="column dataform">
+      {setVisibility && (
+        <span
+          className="close-button"
+          onClick={() => {
+            if (setVisibility) setVisibility(false);
+          }}
+        >
+          X
+        </span>
+      )}
       <div className="row">
         <p className="label"> Name</p>
         <input
@@ -66,7 +91,6 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
           }}
         />
       </div>
-
       <div className="row">
         <p className="label"> Age</p>
         <input
@@ -80,7 +104,6 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
           }}
         />
       </div>
-
       <div className="row">
         <p className="label"> Gender</p>
         <label>
@@ -114,7 +137,6 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
           Male
         </label>
       </div>
-
       <div className="row">
         <p className="label"> Video Upload Status</p>
         <input
@@ -127,7 +149,6 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
           }}
         />
       </div>
-
       <div className="row">
         <p className="label"> Scoliosis Prediction Status</p>
         <select
@@ -145,8 +166,8 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
           <option value="c">C</option>
         </select>
       </div>
-
       <button
+        ref={buttonRef}
         onClick={() => {
           if (patient.hasOwnProperty("id")) {
             updatePatientProfile();
@@ -155,7 +176,6 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
               patient.hasOwnProperty("name") &&
               patient.hasOwnProperty("age") &&
               patient.hasOwnProperty("gender") &&
-              patient.hasOwnProperty("videoUploadStatus") &&
               patient.hasOwnProperty("scoliosisPredictionStatus")
             ) {
               createPatientProfile();
@@ -169,12 +189,9 @@ const DataForm = ({ setVisibility, existingPatient }: Props) => {
               if (!patient.hasOwnProperty("gender")) {
                 alert("Patient form requires a gender attribute");
               }
-              if (!patient.hasOwnProperty("videoUploadStatus")) {
-                alert("Patient form requires a video upload status attribute");
-              }
               if (!patient.hasOwnProperty("scoliosisPredictionStatus")) {
                 alert(
-                  "Patient form requires a scoliosis prediction status attribute"
+                  "Patient form requires a scoliosis prediction status attribute",
                 );
               }
             }

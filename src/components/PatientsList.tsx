@@ -10,11 +10,22 @@ const PatientsList = () => {
     getPatients();
   }, []);
 
-  let getPatients = async () => {
-    let response = await fetch("http://localhost:3000/patients");
-    let data = await response.json();
-    setPatients(data);
-  };
+  const getPatients = async () => {
+    try {
+      let response = await fetch("http://localhost:3000/patients");
+
+      // Check if the HTTP status is successful (200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      let data = await response.json();
+      setPatients(data);
+
+    } catch (error) {
+      console.error("Could not fetch patients:", error);
+    }
+  }
 
   return (
     <>

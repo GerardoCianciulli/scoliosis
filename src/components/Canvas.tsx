@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -8,50 +8,62 @@ interface Props {
 }
 
 const Canvas = ({ id, pointCloudData }: Props) => {
+  // 1. Create a mutable ref to track the changing frame ID
+  // 1. Create a mutable ref to track the changing frame ID
+  const frameRef = useRef<number | null>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    const width = 500;
-    const height = 320;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({
-      canvas: document.querySelector(
-        "#three-js-canvas" + id
-      ) as HTMLCanvasElement,
-    });
-    const controls = new OrbitControls(camera, renderer.domElement);
-    console.log("remove warning by loging", controls);
+    let scene: THREE.Scene;
+    let camera: THREE.PerspectiveCamera;
+    let renderer: THREE.WebGLRenderer;
 
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.position.z = 5;
+    const initCanvas = (width: number, height: number) => {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef.current!,
+      });
+      new OrbitControls(camera, renderer.domElement);
 
-    const sun = new THREE.DirectionalLight(0xccddff, 1);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.position.z = 5;
+    };
 
-    scene.add(sun);
-    scene.add(ambientLight);
+    const populateCanvas = (pointCloud: number[]) => {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(pointCloud, 3),
+      );
+      const material = new THREE.PointsMaterial({ color: 0x888888 });
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+    };
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(pointCloudData, 3)
-    );
-    const material = new THREE.PointsMaterial({ color: 0x888888 });
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
-
-    renderLoop();
-    function renderLoop() {
-      requestAnimationFrame(renderLoop);
+    const renderLoop = () => {
+      frameRef.current = requestAnimationFrame(renderLoop);
       renderer.render(scene, camera);
-    }
+    };
+
+    initCanvas(500, 320);
+    populateCanvas(pointCloudData);
+    renderLoop();
+
+    return () => {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
   }, []);
 
   return (
     <div className="threejs-container">
       {!pointCloudData && <p className="canvas-warning">No cloud data found</p>}
-      <canvas id={"three-js-canvas" + id} />
+      <canvas ref={canvasRef} />
     </div>
   );
 };
