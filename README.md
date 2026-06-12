@@ -6,7 +6,7 @@
 
 - [Overview](#overview)
   - [The challenge](#the-challenge)
-  - [Build](#links)
+  - [Build](#build)
 - [My process](#my-process)
   - [Built with](#built-with)
   - [What I learned](#what-i-learned)
@@ -44,8 +44,6 @@ Users should be able to:
 
 ### Build
 
-# React + TypeScript + Vite + ThreeJs
-
 - Copy the directory from Github
 
 ```bash
@@ -70,12 +68,13 @@ npx json-server db.json
 
 ### Built with
 
+- React
+- TypeScript
+- Vite
+- ThreeJs
 - Semantic HTML5 markup
 - CSS custom properties
 - Flexbox
-- React
-- Typescript
-- Three.js
 - Media Queries
 
 ### What I learned
