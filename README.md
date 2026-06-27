@@ -60,7 +60,7 @@ npx vite
 - In a seperate terminal run the server
 
 ```bash
-cd Scoliosis
+cd scoliosis
 npx json-server db.json
 ```
 
@@ -79,7 +79,7 @@ npx json-server db.json
 
 ### What I learned
 
-I improved my understanding of react hooks, specifically useRef and useEffect as well as how to avoid memory leaks and catch errors when calling an API. Three.js requestAnimationFrame needs to be cleaned up when used inside useEffect. To do this you must return a function that calls cancelAnimationFrame using the latest frame ID. Failing to do this causes animation frames to stack up perpetually, triggering catastrophic memory leaks and UI performance degradation. Because an animation loop schedules a new frame ID on every single tick, you must store the active ID in a mutable useRef. This ensures your cleanup function always targets the exact, live animation frame currently queued by the browser.
+I improved my understanding of react hooks, specifically useRef and useEffect as well as how to avoid memory leaks by catching errors when calling an API. Three.js requestAnimationFrame needs to be cleaned up when used inside useEffect. To do this you must return a function that calls cancelAnimationFrame using the latest frame ID. Failing to do this causes animation frames to stack up perpetually, triggering catastrophic memory leaks and UI performance degradation. Because an animation loop schedules a new frame ID on every single tick, you must store the active ID in a mutable useRef. This ensures your cleanup function always targets the exact, live animation frame currently queued by the browser.
 
 ## Author
 
